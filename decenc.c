@@ -3,7 +3,9 @@
 int coder(int gx, int e, int m){
     int ax,bx,cx;
     ax=m;
-    ax*=pow(2,deg(gx)-1);
+    bx= 1 << (deg(gx)-1);
+    ax *= bx;
+   // ax*=pow(2,deg(gx)-1); //? 1<<(deg(gx)-1);
     cx = divide(ax,gx);
     ax = ax^cx;
     bx = ax^e;
@@ -51,7 +53,7 @@ int Decoder(int gx, int bx){
 
 int deg(int copyg) {
     int x = 0;
-    do{
+    do {
         copyg /= 2;//copyg=copyg>>1;
         x++;
     }while(copyg > 0);
@@ -96,14 +98,14 @@ int divide(int dividend, int divisor) {
     return checkNull;
 }
 
-char *toBinary(int num){
+char *toBinary(int num){ //tomassive_char
     int size = deg(num);
     int mod,j;
     char *bin;
-    j = size -1;
+    j = size-1;
     bin = (char*)malloc(sizeof(char)*(size));
     for(int i=0;i<size;i++){
-        mod = num%2;
+        mod = num%2; //
         num/=2;
         if(mod == 0){
             bin[j]='0';
@@ -115,18 +117,55 @@ char *toBinary(int num){
     return bin;
 }
 
-int toDec(char* bin) {
+int toDec(char* bin) { //char_to_int-bin
     int tmp;
     int x = 0;
-    int size = strlen(bin);
+    double size = strlen(bin); //strlen = 4
     int j = size-1;
     for(int i=0;i<size;i++){
 //        printf("%c %d\n",bin[i],i);
         if(bin[i]=='1') {
-            tmp = 2 << j;
+            tmp = 1 << j;
             x += tmp;
         }
         j--;
     }
     return x;
+}
+
+int esearch() {
+    int gx1, gx2;
+    gx1 = 29;//11101;//toDec(Gx);
+    gx2 = 23;//10111;//toDec(Gx);
+    // m = toDec(M);
+   // e = 1;
+    int result1;
+    int result2;
+    int e_weight, ecopy, n;
+    // int e = 4; 
+   //  printf ("%s",toBinary(e));
+     //e = deg(e);
+    // printf("%d", e);
+    for (int e = 1; deg(e) < MSG_SIZE; e++) { //e<<1 toBinary = tomassive
+        n = 0;
+        ecopy = e;
+        while (ecopy != 0) {
+            if ((ecopy % 2) == 1) { //if 0001&xxxx=1
+                n++;
+            }
+            ecopy = ecopy >> 1;
+        }
+        if (1 == n % 2) {
+            result1 = divide(e, gx1);
+            result2 = divide(e, gx2);
+            if (0 == result1 || 0 == result2) {
+                printf("\n finally found this example, e = %d \n", e);
+                return 2;
+            }
+        }
+
+
+    }
+    printf("\n not found this example, because there is no available any 'e' which will be included in space of coding words \n");
+    return 0;
 }
