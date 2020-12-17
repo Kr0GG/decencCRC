@@ -71,11 +71,13 @@ int divide(int dividend, int divisor) {
         return dividend;
 	}
 	int cicleCount = div-dis +1;
-	int checkNull;
+    //printf("cicleCount %d", cicleCount);
+    int checkNull;
 	char *msg = toBinary(dividend);
-	char *d = toBinary(divisor);
-	int k = 0;
- 	for(int i = 0; i<cicleCount;i++) {
+    char *d = toBinary(divisor);
+    int k = 0;
+    for(int i = 0; i<cicleCount;i++) {
+        //printf(" msg=dividend  %d divisor %d k %d ", *msg, *d, k);
         if (msg[i] == '0') {
             continue;
         }
@@ -88,6 +90,7 @@ int divide(int dividend, int divisor) {
             k++;
         }
         checkNull = toDec(msg);
+       // printf("checkNull %d", checkNull);
         if (checkNull == 0) {
             return 0;
         }
@@ -98,23 +101,20 @@ int divide(int dividend, int divisor) {
     return checkNull;
 }
 
-char *toBinary(int num){ //tomassive_char
-    int size = deg(num);
-    int mod,j;
-    char *bin;
-    j = size-1;
-    bin = (char*)malloc(sizeof(char)*(size));
-    for(int i=0;i<size;i++){
-        mod = num%2; //
-        num/=2;
-        if(mod == 0){
-            bin[j]='0';
-        } else{
-            bin[j]='1';
-        }
-        j--;
+char* toBinary(int number)
+{
+    int n = log2(number) + 1;//n = 1 << number;
+    int i;
+    char* numberArray = calloc(n+1, sizeof(char));
+    if (0 == number) {
+        numberArray[0]='0';
+        return numberArray;
     }
-    return bin;
+    for (i = n - 1; i >= 0; --i, number /= 2)
+    {
+        numberArray[i] = (number % 2) + '0';
+    }
+    return numberArray;
 }
 
 int toDec(char* bin) { //char_to_int-bin
@@ -137,8 +137,6 @@ int esearch() {
     int gx1, gx2;
     gx1 = 29;//11101;//toDec(Gx);
     gx2 = 23;//10111;//toDec(Gx);
-    // m = toDec(M);
-   // e = 1;
     int result1;
     int result2;
     int e_weight, ecopy, n;
@@ -158,6 +156,7 @@ int esearch() {
         if (1 == n % 2) {
             result1 = divide(e, gx1);
             result2 = divide(e, gx2);
+            //printf("\n result1 = %d result2 = %d e = %d \n", result1, result2, e);
             if (0 == result1 || 0 == result2) {
                 printf("\n finally found this example, e = %d \n", e);
                 return 2;
@@ -166,6 +165,6 @@ int esearch() {
 
 
     }
-    printf("\n not found this example, because there is no available any 'e' which will be included in space of coding words \n");
+    printf("\n Cannot find this example, because there is no available any 'e' which will be included in space of coding words \n");
     return 0;
 }
