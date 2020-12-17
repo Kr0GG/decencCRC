@@ -65,17 +65,3 @@ int main(int argc, char** argv){
             free(E);
             return;
         }
-
-
-        void swapInts(int pos1, int pos2, int arr[]) {
-            int temp = arr[pos1];
-            arr[pos1] = arr[pos2];
-            arr[pos2] = temp;
-        }
-
-        void printArray(int length, int arr[]) {
-            for (int i = 0; i < length; i++) {
-                printf("%d ", arr[i]);
-            }
-            putchar('\n');
-        }

@@ -7,7 +7,7 @@
 //#define _CRT_SECURE_NO_WARNINGS
 #pragma warning(disable : 4996)
 #include <math.h>
-#define MSG_SIZE 17
+#define MSG_SIZE 10
 int n, tmp;
 int deg(int copyg);
 int divide(int dividend, int divisor);
