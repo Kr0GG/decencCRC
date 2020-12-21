@@ -1,4 +1,4 @@
-#include "decenc.h"      // ���������� ������������ ���� + stdio.h
+#include "decenc.h"      // methods + stdio.h
 #define INVALID_ARGUMENTS 1
 #define FILE_NOT_FOUND -1
 #define СANNOT_CREATE_FILE -2
@@ -8,7 +8,9 @@ int main(int argc, char** argv){
         int mode;
         scanf("%d", &mode);
         if (mode == 1) {
-            int result = esearch();
+            char*M = (char*)malloc(sizeof(char) * MSG_SIZE);
+            int m = toDec(M);
+            int result = esearch(m);
             if (0 == result) 
                 return 0;
             else return 2;           
@@ -49,7 +51,7 @@ int main(int argc, char** argv){
             printf("gx = %d\n", gx);
             printf("e = %d\n", e);
             printf("m = %d\n", m);
-            //    printf("coder = %d\n",coder(gx,e,m));
+            //    printf("coder = %d\n",coder(gx,e,m)); typical_debug
             int end = coder(gx, e, m);
 
             end = Decoder(gx, end);

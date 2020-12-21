@@ -7,13 +7,13 @@
 //#define _CRT_SECURE_NO_WARNINGS
 #pragma warning(disable : 4996)
 #include <math.h>
-#define MSG_SIZE 10
+#define MSG_SIZE 7
 int n, tmp;
 int deg(int copyg);
 int divide(int dividend, int divisor);
 int coder(int gx, int e, int m);
 int Decoder(int gx, int bx);
-char *toBinary(int num);
+char* toBinary(int number, int gx, int m);
 int toDec(char *bin);
-int esearch();
+int esearch(int m);
 #endif

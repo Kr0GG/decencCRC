@@ -6,17 +6,17 @@ int coder(int gx, int e, int m){
     bx= 1 << (deg(gx)-1);
     ax *= bx;
    // ax*=pow(2,deg(gx)-1); //? 1<<(deg(gx)-1);
-    cx = divide(ax,gx);
+    cx = divide(ax, gx);
     ax = ax^cx;
     bx = ax^e;
 
     char *Ax,*Bx,*Cx,*E, *M, *Gx;
-    Ax = toBinary(ax);
-    Bx = toBinary(bx);
-    Cx = toBinary(cx);
-    E = toBinary(e);
-    Gx = toBinary(gx);
-    M = toBinary(m);
+    Ax = toBinary(ax, gx, m);
+    Bx = toBinary(bx, gx, m);
+    Cx = toBinary(cx, gx, m);  //((deg(ax)-deg(cx))<<3)
+    E = toBinary(e, gx, m);
+    Gx = toBinary(gx, gx, m);
+    M = toBinary(m, gx, m);
     printf("\n\tEncoder\n");
     printf("m: %d  %s\n",m,M);
     printf("gx: %d  %s \n",gx,Gx);
@@ -34,13 +34,14 @@ int coder(int gx, int e, int m){
 }
 int Decoder(int gx, int bx){
     int cx;
+    //printf("%d BBBBBBBBBBBBBBBBB", bx);
     cx = divide(bx,gx);
     char *Bx,*Cx,*Gx;
-    Bx = toBinary(bx);
-    Cx = toBinary(cx);
-    Gx = toBinary(gx);
+    Bx = toBinary(bx, gx, gx); //bx->>mx+-
+    Cx = toBinary(cx, gx, gx); //kostuli
+    Gx = toBinary(gx, gx, gx);
     printf("\n\tDecoder\n");
-    printf("gx: %d  %s \n",gx,toBinary(gx));
+    printf("gx: %d  %s \n",gx,toBinary(gx,gx,gx));
     printf("bx: %d  %s \n",bx,Bx);
     printf("cx: %d  %s \n",cx,Cx);
     //printf("%d \n", strlen(Gx));
@@ -73,11 +74,11 @@ int divide(int dividend, int divisor) {
 	int cicleCount = div-dis +1;
     //printf("cicleCount %d", cicleCount);
     int checkNull;
-	char *msg = toBinary(dividend);
-    char *d = toBinary(divisor);
+	char *msg = toBinary(dividend, divisor, 0);
+    char *d = toBinary(divisor, divisor, 0);
     int k = 0;
     for(int i = 0; i<cicleCount;i++) {
-        //printf(" msg=dividend  %d divisor %d k %d ", *msg, *d, k);
+       // printf(" msg=dividend  %s divisor %d k %s ", msg, d, k);
         if (msg[i] == '0') {
             continue;
         }
@@ -101,17 +102,20 @@ int divide(int dividend, int divisor) {
     return checkNull;
 }
 
-char* toBinary(int number)
-{
-    int n = log2(number) + 1;//n = 1 << number;
-    int i;
-    char* numberArray = calloc(n+1, sizeof(char));
-    if (0 == number) {
-        numberArray[0]='0';
-        return numberArray;
+char* toBinary(int number, int gx, int m){   
+    int ks = deg(gx) - 1;  //kontr summa.dlina
+    int n = deg(number);//n = 1 << number;
+    //printf("\n ks = %d  n = %d  number = %d, m = %d gx = %d \n", ks, n, number, m, gx);// printf("\n %d divdis %d n \n", divdis, n);
+    int i=n-1;
+    if (deg(m) + ks > deg(number)) {
+        i += ks+deg(m)-deg(number);
     }
-    for (i = n - 1; i >= 0; --i, number /= 2)
-    {
+    if (0 == number) {
+        i = deg(m)-1 + ks;
+    }
+    ks = i + 1;
+    char* numberArray = (int*)calloc(ks, sizeof(char)); //malloc+set_null(memset)
+     for (i; i >= 0; --i, number /= 2){ //
         numberArray[i] = (number % 2) + '0';
     }
     return numberArray;
@@ -120,7 +124,7 @@ char* toBinary(int number)
 int toDec(char* bin) { //char_to_int-bin
     int tmp;
     int x = 0;
-    double size = strlen(bin); //strlen = 4
+    double size = strlen(bin);
     int j = size-1;
     for(int i=0;i<size;i++){
 //        printf("%c %d\n",bin[i],i);
@@ -133,18 +137,15 @@ int toDec(char* bin) { //char_to_int-bin
     return x;
 }
 
-int esearch() {
+int esearch(int m) {
     int gx1, gx2;
     gx1 = 29;//11101;//toDec(Gx);
     gx2 = 23;//10111;//toDec(Gx);
     int result1;
     int result2;
     int e_weight, ecopy, n;
-    // int e = 4; 
-   //  printf ("%s",toBinary(e));
-     //e = deg(e);
-    // printf("%d", e);
-    for (int e = 1; deg(e) < MSG_SIZE; e++) { //e<<1 toBinary = tomassive
+   //  printf ("%s",toBinary(e)); // toBinary = to_mass
+    for (int e = 1; deg(e) < MSG_SIZE; e++) { //e<<1
         n = 0;
         ecopy = e;
         while (ecopy != 0) {
@@ -154,11 +155,18 @@ int esearch() {
             ecopy = ecopy >> 1;
         }
         if (1 == n % 2) {
+            
             result1 = divide(e, gx1);
             result2 = divide(e, gx2);
-            //printf("\n result1 = %d result2 = %d e = %d \n", result1, result2, e);
+            //printf("\n result1 = %d result2 = %d e = %d \n", result1, result2, e); //typicalDebug
             if (0 == result1 || 0 == result2) {
-                printf("\n finally found this example, e = %d \n", e);
+                int gx; 
+                if (0 == result1)  gx = gx1;
+                else gx = gx2;
+                char* E;
+                E = toBinary(e, gx, gx);
+                printf("\n finally found this example, e = %d, in a binary type E = %s \n", e, E); 
+                free(E);
                 return 2;
             }
         }
