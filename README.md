@@ -1,4 +1,4 @@
-# decencSRC
+# decencCRC
 This programm doing CRC encoding and decoding + small "C" tip with searching for needs arguments (such as -i путь\input.txt -o путь\output.txt)
 For example: -i C:\Iv\labs\bespr\input.txt -o C:\Iv\labs\bespr\output.txt
 File input.txt example:
